@@ -1,2 +1,8 @@
 # Pronóstico-Presidencial-2022
-Pronóstico de las elecciones presidenciales de Colombia 2022 utilizando ponderación de encuestas y simulación del comportamiento de indecisos y voto en blanco.
+Pronóstico de las elecciones presidenciales de Colombia 2022 utilizando ponderación de encuestas y simulación del comportamiento de indecisos y voto en blanco así como inferencia Bayesiana y Markov Chain Monte Carlo (MCMC). Este repositorio hace parte del soporte para la participación del autor en el recetario abierto de https://www.recetas-electorales.com/. 
+
+En el archivo DataColPV2022.xlsx se encuentra en la hoja "Polls" la tabla de información de cada encuesta publicada después de las consultas del 13 de marzo de 2022. Por cada encuestada se tiene la información de: Nombre de encuestadora ("Pollster"); fecha mediana de muestreo ("Date"); margen de error ("MoE"); fuente ("Source"), enlace ("Link") y la intención de voto por los candidatos: Gustavo Petro, Federico Gutiérrez, Sergio Fajardo, Rodolfo Hernández, Ingrid Betancourt, John Milton Rodriguez, Enrique Gómez y Luis Pérez, así como el voto en blanco ("Blanco"), ninguno ("None") y no sabe no responde ("Uncertain"). 
+
+En la segunda hoja del libro de excel, llamada "Rating" se encuentra por cada encuestadora su calificación ("Rating") basado en el semáforo de encuestadoras electorales en Colombia de La Silla Vacía (https://www.lasillavacia.com/historias/silla-nacional/el-semaforo-de-las-encuestadoras-electorales-en-colombia/).
+
+En el archivo PrimeraVuelta2022Col.R se utiliza el paquete tidyverse para generar los data frames que requiere la ponderación, el modelo y sus gráficas, este archivo está comentariado. Adicionalmente, añadimos una sección de código para obtener la precisión del pronóstico. El archivo DescripciónModelo.pdf contiene la descripción del proceso de ponderación así como las referencias.  
