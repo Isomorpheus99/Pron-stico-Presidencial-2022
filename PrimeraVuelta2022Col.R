@@ -4,7 +4,6 @@
 # R
 rm(list=ls(all=TRUE))
 # We recommend running this is a fresh R session or restarting your current session
-library(prophet)
 library(magrittr)
 library(readxl)
 library(tidyverse)
@@ -13,30 +12,44 @@ library(lubridate)
 library(ggplot2)
 #Load data
 setwd("C:/Users/sergi/OneDrive/Desktop/42/Work/Research/Election Forecasting/Colombia/Presidential")
-df<-read_xlsx("DataCol22.xlsx", sheet="Polls")
+df<-read_xlsx("DataColPV2022.xlsx", sheet="Polls")
+dfweights<-read_xlsx("DataColPV2022.xlsx", sheet="Rating")
 clean_df<-df %>%
-  select(-c(Source, Link, Total)) %>%
+  select(-c(Source, Link)) %>%
   mutate(John_Rodriguez=as.numeric(John_Rodriguez), Enrique_Gomez=as.numeric(Enrique_Gomez),
          Luis_Perez=as.numeric(Luis_Perez), None=as.numeric(None), Uncertain=as.numeric(Uncertain))%>%
-    replace_na(list(John_Rodriguez=0, Enrique_Gomez=0, Luis_Perez=0, None=0, Uncertain=0)) %>%
+  replace_na(list(John_Rodriguez=0, Enrique_Gomez=0, Luis_Perez=0, None=0, Uncertain=0)) %>%
   mutate(Undefined=None+Uncertain+Blanco, 
          En_Blanco=0.0246,
-         Null=0.0175,
          Vote=1-Undefined+En_Blanco,
-         voteava=1-Vote)
+         voteava=1-Vote,
+         En_Blanco=En_Blanco+Blanco*voteava,
+         Vote=1-Undefined+En_Blanco,
+         voteava=1-Vote
+         )
 view(clean_df)
-set.seed(10)
-random<-runif(8)
-random<-random/sum(random)
-dfadjust<-clean_df %>%
-  mutate(Gustavo_Petro=Gustavo_Petro+random[1]*voteava, 
-         Fico_Gutierrez=Fico_Gutierrez+random[2]*voteava, Sergio_Fajardo=Sergio_Fajardo+random[3]*voteava, 
-         Rodolfo_Hernandez=Rodolfo_Hernandez+random[4]*voteava, Ingrid_Betancourt=Ingrid_Betancourt+random[5]*voteava, 
-         Enrique_Gomez=Enrique_Gomez+random[6]*voteava,
-         John_Rodriguez=John_Rodriguez+random[7]*voteava, Luis_Perez=Luis_Perez+random[8]*voteava)
-view(dfadjust)
 
-dffinal<-dfadjust %>%
+dfadjust<-clean_df %>%
+  mutate(Gustavo_Petro=Gustavo_Petro+Gustavo_Petro*voteava, 
+         Fico_Gutierrez=Fico_Gutierrez+Fico_Gutierrez*voteava, Sergio_Fajardo=Sergio_Fajardo+Sergio_Fajardo*voteava, 
+         Rodolfo_Hernandez=Rodolfo_Hernandez+Rodolfo_Hernandez*voteava, Ingrid_Betancourt=Ingrid_Betancourt+Ingrid_Betancourt*voteava, 
+         Enrique_Gomez=Enrique_Gomez+Enrique_Gomez*voteava,
+         John_Rodriguez=John_Rodriguez+John_Rodriguez*voteava, Luis_Perez=Luis_Perez+Luis_Perez*voteava)%>%
+  left_join(dfweights)
+
+view(dfadjust)
+currentdate=Sys.Date()
+dfweighting<-dfadjust%>%
+  select(-(Rating))%>%
+  #filter(Pollster!="MassiveCaller")%>%
+  mutate(Age=as.numeric(currentdate-as.Date(Date)),
+         Decay=1/(MoE*Accuracy))
+dfweighting<-dfweighting%>%
+  mutate(Time=((Decay*0.5)/mean(dfweighting$Decay))^(Age/30))
+dfweighting<-dfweighting%>%
+  mutate(Weight=Time/sum(dfweighting$Time))
+view(dfweighting)
+dffinal<-dfweighting %>%
   pivot_longer(cols=contains("_"), 
                names_to="nombre", values_to="Int_ajus_voto") %>%
   mutate(Candidato=case_when(nombre=="Gustavo_Petro"~"Gustavo Petro", 
@@ -56,13 +69,14 @@ dffinal<-dfadjust %>%
         digits=1,
         caption = "Predicción: % votos por candidato") %>% 
   kable_styling(full_width = F) %>% 
-  footnote(number = c("Cocinero: Sergio Calvo","Twitter: @Scalvo25","Fecha pronóstico: 2022-11-04"))%>%
+  footnote(number = c("Cocinero: Sergio Calvo","Twitter: @Scalvo25","Fecha pronóstico: 2022-24-04"))%>%
   kable_paper() %>%
-  save_kable(file = "table1.html", self_contained = T)
+  save_kable(file = "tablesimpleaverageforecast.html", self_contained = T)
 dffinal
 
-##Gráfico pronóstico
-dffinal1<-dfadjust %>%
+
+##Gráfico pronóstico simple
+dffinal1<-dfweighting %>%
   pivot_longer(cols=contains("_"), 
                names_to="nombre", values_to="Int_ajus_voto") %>%
   mutate(Candidato=case_when(nombre=="Gustavo_Petro"~"Petro", 
@@ -103,9 +117,12 @@ dfgraph<-dfadjust %>%
 view(dfgraph)
 plot<-ggplot(dfgraph, aes(Date, Voto, colour = Candidato)) +
   geom_point() +
-  geom_smooth(level=0.8)
+  geom_smooth(level=0.95)
 plot+scale_color_manual(values=c("blue", "darkblue", "purple", "darkgreen", "brown", "yellow", "orange", "green", "grey"))+
   ggtitle("Encuestas Post-consultas Primera Vuelta 2022")+
   ylab("Porcentaje")+xlab("Fecha")+labs(fill = "Candidato")
 ggsave("GraphPolls.png",width = 20, height = 20, units = "cm")
+
+
+###Inferencia Bayesiana
 
