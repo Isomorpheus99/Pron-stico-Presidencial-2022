@@ -28,13 +28,16 @@ clean_df<-df %>%
          voteava=1-Vote
          )
 view(clean_df)
-
+random=runif(8)
+for(i in 1:8){
+  random[[i]]=random[[i]]/sum(random)
+}
 dfadjust<-clean_df %>%
-  mutate(Gustavo_Petro=Gustavo_Petro+Gustavo_Petro*voteava, 
-         Fico_Gutierrez=Fico_Gutierrez+Fico_Gutierrez*voteava, Sergio_Fajardo=Sergio_Fajardo+Sergio_Fajardo*voteava, 
-         Rodolfo_Hernandez=Rodolfo_Hernandez+Rodolfo_Hernandez*voteava, Ingrid_Betancourt=Ingrid_Betancourt+Ingrid_Betancourt*voteava, 
-         Enrique_Gomez=Enrique_Gomez+Enrique_Gomez*voteava,
-         John_Rodriguez=John_Rodriguez+John_Rodriguez*voteava, Luis_Perez=Luis_Perez+Luis_Perez*voteava)%>%
+  mutate(Gustavo_Petro=Gustavo_Petro+random[1]*voteava, 
+         Fico_Gutierrez=Fico_Gutierrez+random[2]*voteava, Sergio_Fajardo=Sergio_Fajardo+random[3]*voteava, 
+         Rodolfo_Hernandez=Rodolfo_Hernandez+random[4]*voteava, Ingrid_Betancourt=Ingrid_Betancourt+random[5]*voteava, 
+         Enrique_Gomez=Enrique_Gomez+random[6]*voteava,
+         John_Rodriguez=John_Rodriguez+random[7]*voteava, Luis_Perez=Luis_Perez, En_Blanco=En_Blanco+random[8]*voteava)%>%
   left_join(dfweights)
 
 view(dfadjust)
