@@ -1,4 +1,4 @@
-#Pron贸stico Elecciones Presidenciales Colombia 2022
+#Pron髎tico Elecciones Presidenciales Colombia 2022
 #Mayo 2022
 #Load libraries
 # R
@@ -72,18 +72,18 @@ SimulationElect<-(S){
       pivot_longer(cols=contains("_"), 
                    names_to="nombre", values_to="Int_ajus_voto") %>%
       mutate(Candidato=case_when(nombre=="Gustavo_Petro"~"Gustavo Petro", 
-                                 nombre=="Fico_Gutierrez"~"Federico Guti茅rrez", 
+                                 nombre=="Fico_Gutierrez"~"Federico Guti閞rez", 
                                  nombre=="Sergio_Fajardo"~"Sergio Fajardo",
-                                 nombre=="Rodolfo_Hernandez"~"Rodolfo Hern谩ndez",
-                                 nombre=="John_Rodriguez"~"John M. Rodr铆guez",
-                                 nombre=="Luis_Perez"~"Luis P茅rez",
-                                 nombre=="Enrique_Gomez"~"Enrique G贸mez",
+                                 nombre=="Rodolfo_Hernandez"~"Rodolfo Hern醤dez",
+                                 nombre=="John_Rodriguez"~"John M. Rodr韌uez",
+                                 nombre=="Luis_Perez"~"Luis P閞ez",
+                                 nombre=="Enrique_Gomez"~"Enrique G髆ez",
                                  nombre=="Ingrid_Betancourt"~"Ingrid Betancourt",
                                  nombre=="En_Blanco"~"Voto en Blanco")%>%
                factor())%>%
       group_by(Candidato)%>%
-      summarize(Predicci贸n=signif(weighted.mean(Int_ajus_voto, Weight)*100, digits=4))%>%
-      arrange(desc(Predicci贸n))
+      summarize(Predicci髇=signif(weighted.mean(Int_ajus_voto, Weight)*100, digits=4))%>%
+      arrange(desc(Predicci髇))
     dffinal2<- dffinal%>%
       select(-c(Candidato))
     for(j in 1:ncol(dffinal[i])){
