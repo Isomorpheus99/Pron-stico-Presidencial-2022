@@ -6,8 +6,9 @@ rm(list=ls(all=TRUE))
 # We recommend running this is a fresh R session or restarting your current session
 library(magrittr)
 library(readxl)
-library(tidyverse)
 library(plyr)
+library(Rmisc)
+library(tidyverse)
 library(kableExtra)
 library(lubridate)
 library(ggplot2)
@@ -27,8 +28,8 @@ clean_df<-df %>%
          Vote=1-Undefined+En_Blanco,
          voteava=1-Vote
   )
-SimulationElect<-(S){
-  dffinal=list()
+SimulationElect<-function(S){
+  dfs=list()
   for(i in 1:S){
     x<-rnorm(8)
     x<-x/2
@@ -68,7 +69,7 @@ SimulationElect<-(S){
       mutate(Time=((Decay*0.5)/mean(dfweighting$Decay))^(Age/30))
     dfweighting<-dfweighting%>%
       mutate(Weight=Time/sum(dfweighting$Time))
-    dffinal[[i]]<-dfweighting %>%
+    dffinal<-dfweighting %>%
       pivot_longer(cols=contains("_"), 
                    names_to="nombre", values_to="Int_ajus_voto") %>%
       mutate(Candidato=case_when(nombre=="Gustavo_Petro"~"Gustavo Petro", 
@@ -84,13 +85,12 @@ SimulationElect<-(S){
       group_by(Candidato)%>%
       summarize(Predicción=signif(weighted.mean(Int_ajus_voto, Weight)*100, digits=4))%>%
       arrange(desc(Predicción))
-    dffinal2<- dffinal%>%
-      select(-c(Candidato))
-    for(j in 1:ncol(dffinal[i])){
-      dffinal[i][j, 2]=dffinal2[i][j]/as.numeric(colSums(dffinal2))
-    }
+    dfs=append(dfs,dffinal)
   }
-  Result<-join_all(dffinal, by="Candidato",type = "left", match = "all")
+  Result<-join_all(dfs, by="Candidato",type = "left", match = "all")
+  scale<-function(x) x/sum(x)
+  Result<-Result%>%
+    mutate(across(!Candidato, scale))
   Dist<-Result
   Result<-Result%>%
     mutate(Promedio=rowMeans(Result[,2:ncol(Result)]))
@@ -100,6 +100,7 @@ SimulationElect<-(S){
   return(Return)
 }
 
-SimulationElect()
+SimulationElect(2)
 install.packages("gmodels")
 apply(as.matrix(dffinal3), 1, function(x) ci(x))
+
