@@ -39,8 +39,8 @@ SimulationElect<-function(S){
              Ingrid_Betancourt=Ingrid_Betancourt+x[5]*MoE, John_Rodriguez=John_Rodriguez+x[6]*MoE,
              Enrique_Gomez=Enrique_Gomez+x[7]*MoE, Luis_Perez=Luis_Perez, En_Blanco=En_Blanco+x[8]*MoE)
     random=runif(8)
-    for(i in 1:8){
-      random[[i]]=random[[i]]/sum(random)
+    for(j in 1:8){
+      random[[j]]=random[[j]]/sum(random)
     }
     dfadjust<-dfadjust %>%
       mutate(Gustavo_Petro=Gustavo_Petro+random[1]*voteava, 
@@ -84,23 +84,24 @@ SimulationElect<-function(S){
                factor())%>%
       group_by(Candidato)%>%
       summarize(Predicción=signif(weighted.mean(Int_ajus_voto, Weight)*100, digits=4))%>%
-      arrange(desc(Predicción))
-    dfs=append(dfs,dffinal)
+      arrange(desc(Candidato)) %>% as.data.frame
+    dfs[[i]]=dffinal
   }
   Result<-join_all(dfs, by="Candidato",type = "left", match = "all")
+  namesdf=c("Candidato")
+  for(i in 1:S){
+  namesdf[[i+1]] <- paste("Simulation", i, sep = "")
+  }
+  colnames(Result)<-namesdf
   scale<-function(x) x/sum(x)
   Result<-Result%>%
     mutate(across(!Candidato, scale))
-  Dist<-Result
   Result<-Result%>%
     mutate(Promedio=rowMeans(Result[,2:ncol(Result)]))
   Result<-Result%>%
     select(c(Candidato, Promedio))
-  Return<-list("Dist"=Dist, "Result"=Result)
-  return(Return)
+  return(Result)
 }
 
-SimulationElect(2)
-install.packages("gmodels")
-apply(as.matrix(dffinal3), 1, function(x) ci(x))
+SimulationElect(1000)
 
