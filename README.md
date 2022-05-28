@@ -7,4 +7,4 @@ En la segunda hoja del libro de excel, llamada "Rating" se encuentra por cada en
 
 En el archivo ScriptPVCol22.R se utiliza el paquete tidyverse para generar los data frames que requiere la ponderación, el modelo y sus gráficas, este archivo está comentariado. Adicionalmente, añadimos una sección de código para obtener la precisión del pronóstico. El archivo DescripciónModelo.pdf contiene la descripción del modelo así como las referencias.  
 
-Similarmente, se tienen dos archivos análogos para la predicción de resultados en la ciudad de Bogotá: para datos DataBogPV2022.xlsx y para cálculos ScriptPVBog22.R. El archivo DataBogPV2022.xlsx contiene una sexta hoja correspondiente al ajuste de los datos de la encuestadora Atlas Intel.
+Similarmente, se tienen dos archivos análogos para la predicción de resultados en la ciudad de Bogotá: para datos DataBogPV2022.xlsx y para cálculos ScriptPVBog22.R. El archivo DataBogPV2022.xlsx contiene una variación en su cuarta hoja, correspondiente al ajuste de los datos de la encuestadora Atlas Intel.
