@@ -5,4 +5,4 @@ Se elabora un achivo de texto con nombre: EncuestasSV2022.txt que contiene infor
 
 Ahora bien, tomando como base el archivo de encuestas previamente descrito, se elabora un archivo de datos SerieTemporalSV2022.txt con las mismas columnas exceptuando Pollster, MoE, Source y Link. Posteriormente, se realiza para el caso de varias encuestas con la misma fecha, un promedio ponderado por el tamaño de muestra. Lo anterior garantiza que para cada fecha se obtenga un registro único que consiste de tamaño de muestra, proporción de la intención de voto para cada candidato, el voto en blanco, indecisos y aquellos que no planean votar por ninguna opción. Los cálculos pueden encontrarse en el archivo de Excel AjusteSV.xlsx.
 
-El modelo fue elaborado en el paquete estadístico R en el archivo ScriptModeloSV2022.R.
+El modelo fue elaborado en el paquete estadístico R en el archivo ScriptModeloSV2022.R. En el archivo Explicación_Modelo.pdf se encuentra el detalle de la construcción del modelo y los archivos de datos.
